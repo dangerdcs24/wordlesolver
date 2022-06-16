@@ -22,7 +22,7 @@ guessExpectation = {
 def solve_wordle(target):
 	words = load_wordle_dictionary('words.txt')
 	# 12972 total words of length 5
-	possibilities = words
+	possibilities = load_wordle_dictionary('possibilities.txt')
 	# test_stuff()
 	success = False
 	guesses = []
