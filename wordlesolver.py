@@ -132,8 +132,65 @@ def compute_guess(words, possibilities, round, strategy):
 		return possibilities[randomIdx]
 	elif strategy == 'greedy':
 		return compute_greedy_guess(words, possibilities, round)
+	# elif strategy == 'recursive':
+	# 	return compute_recursive_guess(words, possibilities, round)
 	else:
 		return 'abode'
+
+
+# None of this is going to work
+# def compute_recursive_guess(words, possibilities, round):
+# 	for target in possibilities:
+# 		compute_expected_guess_total(words, possibilities, target)
+
+
+# def compute_expected_guess_total(words, possibilities, target):
+# 	if len(possibilities) == 0:
+# 		raise ValueError('GAAAAHHHHHH!!!!')
+# 	# ------- base cases -------
+# 	if len(possibilities) == 1:
+# 		return 1
+# 	if len(possibilities) == 2:
+# 		return 1.5
+# 	# -------- recursive cases ----------
+# 	# select best word and best non-possible word that reduce the expected possibilities the most
+# 	bestWord = None
+# 	bestPossibleWord = None
+# 	bestExpectedPossibilitesTotal = 10000000
+# 	bestExpectedPossibilitiesAmongPossibleWords = 1000000
+# 	for word in words:
+# 		result = compute_result(word, target)
+# 		possibilityCnt = len(reduce_possibilities(word, result, possibilities))
+# 		if possibilityCnt < bestExpectedPossibilitesTotal:
+# 			bestExpectedPossibilitesTotal = possibilityCnt
+# 			bestWord = word
+# 		if word in possibilities and possibilityCnt < bestExpectedPossibilitiesAmongPossibleWords: 
+# 			bestExpectedPossibilitiesAmongPossibleWords = possibilityCnt
+# 			bestPossibleWord = word
+# 	# now recursively probe the tree with the best possible word and best total word as branches
+# 	# for the tree at each step
+# 	bestWordExpectedGuessTotal = 0
+# 	bestPossibleWordExpectedGuessTotal = 0
+# 	if bestWord == target:
+# 		bestWordExpectedGuessTotal = 1
+# 	else:
+# 		result = compute_result(bestWord, target)
+# 		bestWordPossibilities = reduce_possibilities(bestWord, result, possibilities)
+# 		bestWordExpectedGuessTotal = 1 + compute_expected_guess_total(words, bestWordPossibilities, target)
+# 	if bestWord == bestPossibleWord:
+# 		bestPossibleWordExpectedGuessTotal = bestWordExpectedGuessTotal
+# 	elif bestPossibleWord == target:
+# 		bestPossibleWordExpectedGuessTotal = 1
+# 	else:
+# 		result = compute_result(bestPossibleWord, target)
+# 		bestPossibleWordPossibilities = reduce_possibilities(bestPossibleWord, result, possibilities)
+# 		bestPossibleWordExpectedGuessTotal = 1 + compute_expected_guess_total(words,
+# 			bestPossibleWordPossibilities, target)
+# 	if bestPossibleWordExpectedGuessTotal < bestWordExpectedGuessTotal:
+# 		return bestPossibleWordExpectedGuessTotal
+# 	else:
+# 		return bestWordExpectedGuessTotal
+
 
 
 # the greedy algorithm is an intelligent greedy algorithm that determines which word to guess
@@ -145,7 +202,7 @@ def compute_guess(words, possibilities, round, strategy):
 # guesses until the target word is found.
 def compute_greedy_guess(words, possibilities, round):
 	if round == 0:
-		return 'tales'
+		return 'roate'
 	# base case
 	if len(possibilities) <= 2:
 		randomIdx = random.randint(0, len(possibilities) - 1)
@@ -177,7 +234,8 @@ def compute_greedy_guess(words, possibilities, round):
 		print('best expected possibilities for possible word: ' + str(bestExpectedPossibilitiesAmongPossibleWords))
 		print('possibilities length: ' + str(len(possibilities)))
 		print('possibilities: ' + str(possibilities))
-		if len(possibilities) > 10:
+		# if len(possibilites) > 10:
+		if bestExpectedPossibilitiesAmongPossibleWords > 3.5:
 			return bestWord
 		if round == 5:
 			# if this is the last round, gotta guess a possible word
@@ -210,7 +268,7 @@ def compute_greedy_guess(words, possibilities, round):
 
 
 def expected_guesses_with_n_possibilities_left(n):
-	if n > 4:
+	if n > 5:
 		print('woah... calling expected guesses wih n > 4, did not expect this to happen')
 		print('n: ' + str(n))
 	return guessExpectation[n]
