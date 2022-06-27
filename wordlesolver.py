@@ -1,6 +1,8 @@
 import random
 import math
 import argparse
+import os
+import pickle
 
 guessExpectation = {
 	1: 1,
@@ -8,7 +10,7 @@ guessExpectation = {
 	3: 1.75,
 	4: 1.9375,
 	5: 2.025,
-	6: 2.5,
+	6: 2.25,
 	7: 2.5,
 	8: 2.5,
 	9: 2.5,
@@ -19,10 +21,11 @@ guessExpectation = {
 # 1 means in target wrong position (yellow), 2 means in target in correct position (green)
 
 # Solves the wordle given a target word to guess
-def solve_wordle(target):
-	words = load_wordle_dictionary('words.txt')
+def solve_wordle(target, saveResults):
+	currentDir = os.path.abspath(os.path.dirname(__file__))
+	words = load_wordle_dictionary(currentDir + '/words.txt')
 	# 12972 total words of length 5
-	possibilities = load_wordle_dictionary('possibilities.txt')
+	possibilities = load_wordle_dictionary(currentDir + '/possibilities.txt')
 	# test_stuff()
 	success = False
 	guesses = []
@@ -41,6 +44,27 @@ def solve_wordle(target):
 			break
 	report_success(success, guesses)
 	report_analytics(possibilities, target)
+	if saveResults:
+		results = load_results(currentDir)
+		print('results before this word ---------------')
+		print(results)
+		if success:
+			results[len(guesses)] = results[len(guesses)] + 1
+		else:
+			results['failures'] = results['failures'] + 1
+		print('results after this word---------------')
+		print(results)
+		save_results(currentDir, results)
+
+
+def load_results(currentDir):
+    with open(currentDir + '/results.pkl', 'rb') as f:
+        return pickle.load(f)
+
+
+def save_results(currentDir, results):
+	with open(currentDir + '/results.pkl', 'wb') as f:
+		pickle.dump(results, f)
 
 
 # load dictionary of words
@@ -269,7 +293,7 @@ def compute_greedy_guess(words, possibilities, round):
 
 def expected_guesses_with_n_possibilities_left(n):
 	if n > 5:
-		print('woah... calling expected guesses wih n > 4, did not expect this to happen')
+		print('woah... calling expected guesses with n > 4, did not expect this to happen')
 		print('n: ' + str(n))
 	return guessExpectation[n]
 
@@ -307,8 +331,9 @@ def test_stuff():
 
 if __name__ == "__main__":
 	parser = argparse.ArgumentParser(description='Solve a wordle')
-	parser.add_argument('targetWord', type=str,
+	parser.add_argument('--targetWord', type=str,
         help='the target word that the program will try to guess')
+	parser.add_argument('--saveResults', action="store_true")
 
 	args = parser.parse_args()
-	solve_wordle(args.targetWord)
+	solve_wordle(args.targetWord, args.saveResults)
